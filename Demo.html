@@ -1,0 +1,58 @@
+<html>
+
+<head>
+    <title>SDK FULL - Yuno </title>
+    <script src="https://sdk-web.y.uno/v1/static/js/main.min.js" defer></script>
+    <script src="./checkoutFull.js"></script>
+</head>
+
+<body align='center'>
+    
+    <br>
+    <header align='center'>
+          <h1 style="font-family:algerian; font-weight: bold;color: blueviolet">DEMO YUNO</h1>
+          <img src="Fondo.png" alt="Fondo" width="500px">
+    </header>
+    <br>   
+    <br>
+		<!-- Customer Session Information -->
+	    <label for="checkoutId" style="font-family:Lucida Calligraphy; color: blueviolet"><font size='4'><b>Checkout Session Id: </b></font></label>
+		<input style="background-color:#ffffff;color:#5500ef;" type="text" name="checkoutId" id="checkoutId" required>
+        <h6 style="font-family:Lucida Calligraphy">(Please enter the customer session id previously generated in your backend)</h6>
+
+    <!-- Levantamiento del checkout -->    
+    <div align='center'>
+        <button  type="button" onclick="checkoutFull()" style="background-color: blueviolet; color: white; font-family: algerian; padding: 10px 20px; border: none; cursor: pointer ; font-weight: bold;">
+            Raise SDK FULL
+        </button>
+    </div>
+    <br>
+    <br>
+
+    <!-- Elemento selector para el SDK FULL -->
+    <div align='center' id="root">
+    </div>
+    <br>
+
+    <div>
+        <button type="button" id="button-send" style="background-color: blueviolet; color: white; font-family: algerian; padding: 10px 20px; border: none; cursor: pointer ; font-weight: bold;">
+            Generate TOKEN
+        </button>
+    </div>
+    <br>
+
+    <!-- Token response -->
+	<label for="tokenGenerated" style="font-family:Lucida Calligraphy; color: blueviolet"><font size='5'><b>One time token: </b></font></label>
+    <input style="background-color:#ffffff;color:#5500ef;" type="text" id="tokenGenerated"/>
+    <h6 style="font-family:Lucida Calligraphy">(Token to send to your backend to make the payment)</h6>
+</body>
+
+  <footer align='center'> <pre>
+
+    <img src="Fondo.png" alt="Fondo" width="500px">
+
+    <small>© 2024 Demo Yuno &#128511;</small></pre>
+  </footer>
+  
+</html>
+
