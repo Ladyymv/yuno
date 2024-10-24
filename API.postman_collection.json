@@ -1,0 +1,218 @@
+{
+	"info": {
+		"_postman_id": "ec1be5e6-2cdf-424d-8192-9cbbb4c50220",
+		"name": "API flow",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26205536"
+	},
+	"item": [
+		{
+			"name": "Create Customer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json(),",
+							"    savedData = JSON.stringify(response.id);",
+							"",
+							"pm.environment.set(\"customer_id\", response.id);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var uuid = require('uuid');",
+							"pm.environment.set(\"idempotency\", uuid.v4());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "public-api-key",
+						"value": "{{api-key}}",
+						"type": "text"
+					},
+					{
+						"key": "private-secret-key",
+						"value": "{{secret-key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    // https://docs.y.uno/reference/create-customer\n    // country reference for country/nationality/document/phone: https://docs.y.uno/reference/country-reference\n    \"merchant_customer_id\": \"{{$timestamp}}\",\n    \"first_name\": \"Leidy\",\n    \"last_name\": \"Meneses\",\n    \"email\": \"lyvmeneses@gmail.com\",\n    \"country\":\"CO\",\n    \"gender\": \"F\",\n    \"date_of_birth\": \"1998-03-11\",\n    \"nationality\": \"CO\",\n    \"document\": {\n        \"document_type\": \"CC\",\n        \"document_number\": \"1010268952\"\n    },\n    \"phone\": {\n        \"number\": \"3132450765\",\n        \"country_code\": \"57\"\n    },\n    \"billing_address\": {\n        \"address_line_1\": \"Calle 34 # 56 - 78\",\n        \"address_line_2\": \"Apartamento 502, Torre I\",\n        \"country\": \"CO\",\n        \"state\": \"Villa del rosario\",\n        \"city\": \"cúcuta\",\n        \"zip_code\": \"111111\"\n    },\n    \"shipping_address\": {\n        \"address_line_1\": \"Calle 34 # 56 - 78\",\n        \"address_line_2\": \"Apartamento 502, Torre I\",\n        \"country\": \"CO\",\n        \"state\": \"Villa del rosario\",\n        \"city\": \"cúcuta\",\n        \"zip_code\": \"111111\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{pci_url_microservice}}/v1/customers",
+					"host": [
+						"{{pci_url_microservice}}"
+					],
+					"path": [
+						"v1",
+						"customers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create checkout session",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();",
+							"",
+							"pm.environment.set(\"checkout_session\", response.checkout_session);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "public-api-key",
+						"value": "{{api-key}}",
+						"type": "text"
+					},
+					{
+						"key": "private-secret-key",
+						"value": "{{secret-key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    // https://docs.y.uno/reference/create-checkout-session\n    \"account_id\": \"{{account-code}}\",\n    \"merchant_order_id\": \"{{$timestamp}}\",\n    \"payment_description\": \"Test\",\n    \"callback_url\": \"http://www.google.com/\",\n    \"country\": \"CO\",\n    \"customer_id\": \"{{customer_id}}\",\n    \"amount\": {\n        \"currency\": \"COP\",\n        \"value\": 15000\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{pci_url_microservice}}/v1/checkout/sessions",
+					"host": [
+						"{{pci_url_microservice}}"
+					],
+					"path": [
+						"v1",
+						"checkout",
+						"sessions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Payment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();",
+							"",
+							"pm.environment.set(\"payment_code\", response.id);",
+							"",
+							"pm.environment.set(\"transaction_code\", response.transactions.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var uuid = require('uuid');",
+							"pm.environment.set(\"idempotency\", uuid.v4());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"user-agent": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-idempotency-key",
+						"value": "{{idempotency}}",
+						"type": "text"
+					},
+					{
+						"key": "public-api-key",
+						"value": "{{api-key}}",
+						"type": "text"
+					},
+					{
+						"key": "private-secret-key",
+						"value": "{{secret-key}}",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Keep-Alive",
+						"value": "timeout=5, max=1000",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    // https://docs.y.uno/reference/create-payment\n    \"description\": \"Demo Payment\",\n    \"account_id\": \"{{account-code}}\",\n    \"merchant_order_id\": \"{{$timestamp}}\",\n    \"country\": \"CO\",\n    \"amount\": {\n        \"currency\": \"COP\",\n        \"value\": 15000\n    },\n    \"checkout\": {\n        \"session\": \"{{checkout_session}}\"\n    },\n    \"customer_payer\": {\n        \"id\": \"{{customer_id}}\",\n        \"browser_info\": {\n            \"accept_header\": \"string\",\n            \"color_depth\": \"string\",\n            \"javascript_enabled\": true,\n            \"language\": \"string\",\n            \"screen_height\": \"string\",\n            \"screen_width\": \"string\",\n            \"user_agent\": \"string\"\n        },\n        \"device_fingerprint\": \"hi88287gbd8d7d782ge....\",\n        \"ip_address\": \"192.168.123.167\"\n    },\n    \"payment_method\": {\n        // Use Yuno's SDK to Get the one time token to process the payment: https://docs.y.uno/docs/web-sdk-integrations\n        \"token\": \"defc9f89-c20c-4f0e-b014-d4af948dc273\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{pci_url_microservice}}/v1/payments",
+					"host": [
+						"{{pci_url_microservice}}"
+					],
+					"path": [
+						"v1",
+						"payments"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
