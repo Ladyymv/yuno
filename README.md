@@ -1,6 +1,6 @@
 # yuno
 
-This project is only for generating tokens using the FULL SDK.
+This project is only for generating tokens using the FULL SDK (URL: https://ladyymv.github.io/yuno/index.html).
 
 It is necessary to implement the API on some platform, such as APIDog, Insomia, Postman, among others.
 
